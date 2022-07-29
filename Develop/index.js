@@ -6,7 +6,7 @@ const inquirer = require('inquirer');
 // TODO: Create an array of questions for user input
 const question = [{
             type:'input',
-            name: 'project title',
+            name: 'projectTitle',
             message: 'What is your project title ?',
         },        
         {
@@ -35,10 +35,10 @@ const question = [{
             message:'Enter Testing Instructions',
         },
         {
-            type:'checkbox',
+            type:'list',
             name: 'license',
             message: 'Choose a license for this project',
-            choices: ['MIT','GNU','APACHE 2.0','BSD','EPL']
+            choices: ['MIT','GNU','Apache','BSD','EPL', 'ISC']
         },
         {
             type:'input',
@@ -47,15 +47,54 @@ const question = [{
         },
         {
             type:'input',
-            name: 'email address',
+            name: 'email',
             message: 'Enter your email address',
         }
     ];
-         
+    
+
+function generateReadMe(data) {
+    let markdown = `# ${data.projectTitle}
+
+## License
+
+![License](https://img.shields.io/badge/License-${data.license}-blue.svg)
+
+## Table of Contents 
+
+- [License](#tests)
+- [Description](#description)
+- [Installation](#installation)
+- [Usage](#usage)
+- [License](#license)
+- [How to Contribute](#how-to-contribute)
+
+## Description
+${data.description}
+
+## Installation
+${data.installation}
+
+## Usage
+${data.usage}
+
+## How to Contribute
+${data.contribution}
+
+## Tests
+${data.test}
+
+## Questions
+- [Github](https://github.com/${data.github}) 
+- For any additional questions you can reach me at [${data.email}](mailto:${data.email})
+
+`;
+    return markdown;
+}
 
 // TODO: Create a function to write README file
 function writeToFile(fileName, data) {
-    fs.writeFile(filename, data.toString(), err => {
+    fs.writeFile(fileName, data, err => {
         if (err) throw new Error(err);
         console.log('Page created! Check out README.md in this directory to see it!');
     });
@@ -63,9 +102,12 @@ function writeToFile(fileName, data) {
 
 // TODO: Create a function to initialize app
 function init() {
-    let data = {};
-    inquirer.prompt(question).then(answer => data = answer);
-    writeToFile('./README.md', data);
+    inquirer.prompt(question)
+    .then(answer => {
+        let README = generateReadMe(answer)
+        writeToFile('./README.md', README)
+    });
+    
 }
 
 // Function call to initialize app
